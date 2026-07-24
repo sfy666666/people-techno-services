@@ -8,6 +8,7 @@ public class PhoneDetailVO {
     private String name;
     private Integer price;
     private String imageColor;
+    private String coverImage;
     private List<KeyValueVO> basicItems;
     private List<GameTestVO> gameTests;
     private CpuSummaryVO cpuSummary;
@@ -22,6 +23,7 @@ public class PhoneDetailVO {
     public String getName() { return name; } public void setName(String name) { this.name = name; }
     public Integer getPrice() { return price; } public void setPrice(Integer price) { this.price = price; }
     public String getImageColor() { return imageColor; } public void setImageColor(String imageColor) { this.imageColor = imageColor; }
+    public String getCoverImage() { return coverImage; } public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
     public List<KeyValueVO> getBasicItems() { return basicItems; } public void setBasicItems(List<KeyValueVO> basicItems) { this.basicItems = basicItems; }
     public List<GameTestVO> getGameTests() { return gameTests; } public void setGameTests(List<GameTestVO> gameTests) { this.gameTests = gameTests; }
     public CpuSummaryVO getCpuSummary() { return cpuSummary; } public void setCpuSummary(CpuSummaryVO cpuSummary) { this.cpuSummary = cpuSummary; }

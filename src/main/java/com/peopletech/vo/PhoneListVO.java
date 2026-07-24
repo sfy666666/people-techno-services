@@ -11,8 +11,11 @@ public class PhoneListVO {
     private List<String> tags;
     private String score;
     private String scoreLabel;
+    private String coverImage;
     private Integer price;
     private Integer sort;
+    private String processor;
+    private Boolean showHome;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -32,6 +35,11 @@ public class PhoneListVO {
     public void setScoreLabel(String scoreLabel) { this.scoreLabel = scoreLabel; }
     public Integer getPrice() { return price; }
     public void setPrice(Integer price) { this.price = price; }
+    public String getCoverImage() { return coverImage; } public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
     public Integer getSort() { return sort; }
     public void setSort(Integer sort) { this.sort = sort; }
+    public String getProcessor() { return processor; }
+    public void setProcessor(String processor) { this.processor = processor; }
+    public Boolean getShowHome() { return showHome; }
+    public void setShowHome(Boolean showHome) { this.showHome = showHome; }
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/phone")
@@ -42,10 +43,16 @@ public class PhoneController {
     // ===== 小程序接口 =====
 
     @GetMapping("/list")
-    public Result<List<PhoneListVO>> getPhoneList(
+    public Result<Map<String, Object>> getPhoneList(
+            @RequestParam(required = false) String brand,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String keyword) {
-        return Result.ok(phoneService.getPhoneList(category, keyword));
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize) {
+        return Result.ok(phoneService.getPhoneListPage(brand, category, keyword, sortBy, minPrice, maxPrice, page, pageSize));
     }
 
     @GetMapping("/detail/{id}")
@@ -58,8 +65,19 @@ public class PhoneController {
     // ===== 管理后台接口 =====
 
     @GetMapping("/admin/list")
-    public Result<List<Phone>> adminList() {
-        return Result.ok(phoneMapper.selectList(null));
+    public Result<Map<String, Object>> adminList(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(required = false) String keyword) {
+        int offset = (page - 1) * pageSize;
+        List<PhoneAdminVO> list = phoneMapper.adminList(keyword, offset, pageSize);
+        int total = phoneMapper.countAll(keyword);
+        Map<String, Object> result = new java.util.HashMap<>();
+        result.put("list", list);
+        result.put("total", total);
+        result.put("page", page);
+        result.put("pageSize", pageSize);
+        return Result.ok(result);
     }
 
     @PostMapping("/admin")
@@ -79,6 +97,39 @@ public class PhoneController {
     public Result<Void> deletePhone(@PathVariable Long id) {
         phoneMapper.deleteById(id);
         return Result.ok();
+    }
+
+    // ===== 子表查询接口 =====
+
+    @GetMapping("/admin/{phoneId}/basic")
+    public Result<PhoneBasic> getBasic(@PathVariable Long phoneId) {
+        PhoneBasic basic = basicMapper.selectOne(new LambdaQueryWrapper<PhoneBasic>().eq(PhoneBasic::getPhoneId, phoneId));
+        return Result.ok(basic);
+    }
+
+    @GetMapping("/admin/{phoneId}/game-tests")
+    public Result<List<PhoneGameTest>> getGameTests(@PathVariable Long phoneId) {
+        return Result.ok(gameTestMapper.selectList(new LambdaQueryWrapper<PhoneGameTest>().eq(PhoneGameTest::getPhoneId, phoneId)));
+    }
+
+    @GetMapping("/admin/{phoneId}/benchmarks")
+    public Result<List<PhoneBenchmark>> getBenchmarks(@PathVariable Long phoneId) {
+        return Result.ok(benchmarkMapper.selectList(new LambdaQueryWrapper<PhoneBenchmark>().eq(PhoneBenchmark::getPhoneId, phoneId)));
+    }
+
+    @GetMapping("/admin/{phoneId}/batteries")
+    public Result<List<PhoneBattery>> getBatteries(@PathVariable Long phoneId) {
+        return Result.ok(batteryMapper.selectList(new LambdaQueryWrapper<PhoneBattery>().eq(PhoneBattery::getPhoneId, phoneId)));
+    }
+
+    @GetMapping("/admin/{phoneId}/screens")
+    public Result<List<PhoneScreen>> getScreens(@PathVariable Long phoneId) {
+        return Result.ok(screenMapper.selectList(new LambdaQueryWrapper<PhoneScreen>().eq(PhoneScreen::getPhoneId, phoneId)));
+    }
+
+    @GetMapping("/admin/{phoneId}/others")
+    public Result<List<PhoneOther>> getOthers(@PathVariable Long phoneId) {
+        return Result.ok(otherMapper.selectList(new LambdaQueryWrapper<PhoneOther>().eq(PhoneOther::getPhoneId, phoneId)));
     }
 
     @PostMapping("/admin/{phoneId}/basic")

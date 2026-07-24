@@ -59,7 +59,91 @@ public class PhoneService {
         if (keyword != null && !keyword.trim().isEmpty()) {
             q.and(w -> w.like(Phone::getName, keyword).or().like(Phone::getBrand, keyword));
         }
-        return phoneMapper.selectList(q).stream().map(this::toListVO).collect(Collectors.toList());
+        List<Phone> phones = phoneMapper.selectList(q);
+        // 批量获取 processor
+        Map<Long, String> procMap = new HashMap<Long, String>();
+        if (!phones.isEmpty()) {
+            List<Long> ids = phones.stream().map(Phone::getId).collect(Collectors.toList());
+            LambdaQueryWrapper<PhoneBasic> bq = new LambdaQueryWrapper<PhoneBasic>().in(PhoneBasic::getPhoneId, ids);
+            for (PhoneBasic b : basicMapper.selectList(bq)) {
+                procMap.put(b.getPhoneId(), b.getProcessor());
+            }
+        }
+        final Map<Long, String> procMapFinal = procMap;
+        return phones.stream().map(p -> {
+            PhoneListVO vo = toListVO(p);
+            vo.setProcessor(procMapFinal.get(p.getId()));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
+    /** 机型列表（分页） */
+    public Map<String, Object> getPhoneListPage(String brand, String category, String keyword,
+                                                 String sortBy, Integer minPrice, Integer maxPrice,
+                                                 int page, int pageSize) {
+        LambdaQueryWrapper<Phone> q = new LambdaQueryWrapper<Phone>()
+            .eq(Phone::getEnabled, true);
+
+        // 品牌筛选（前端传 brand，后端用 brand 字段匹配）
+        if (brand != null && !brand.trim().isEmpty()) {
+            q.eq(Phone::getBrand, brand);
+        }
+        // 档位筛选（保留旧 category 逻辑）
+        if (category != null && !category.trim().isEmpty()) {
+            q.eq(Phone::getCategory, category);
+        }
+        // 关键词搜索
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            q.and(w -> w.like(Phone::getName, keyword).or().like(Phone::getBrand, keyword));
+        }
+        // 价格区间
+        if (minPrice != null && minPrice > 0) {
+            q.ge(Phone::getPrice, minPrice);
+        }
+        if (maxPrice != null && maxPrice > 0 && maxPrice < 99999) {
+            q.le(Phone::getPrice, maxPrice);
+        }
+        // 排序
+        if ("price-asc".equals(sortBy)) {
+            q.orderByAsc(Phone::getPrice);
+        } else if ("price-desc".equals(sortBy)) {
+            q.orderByDesc(Phone::getPrice);
+        } else if ("newest".equals(sortBy)) {
+            // newest = 按 id 降序（id 大 = 新录入 = 较新机型）
+            q.orderByDesc(Phone::getId);
+        } else {
+            q.orderByAsc(Phone::getSort);
+        }
+
+        // 总数（独立查，不受 LIMIT 影响）
+        long total = phoneMapper.selectCount(q);
+
+        // 分页
+        q.last("LIMIT " + ((page - 1) * pageSize) + ", " + pageSize);
+        List<Phone> phones = phoneMapper.selectList(q);
+
+        // 批量获取 processor
+        Map<Long, String> procMap = new HashMap<Long, String>();
+        if (!phones.isEmpty()) {
+            List<Long> ids = phones.stream().map(Phone::getId).collect(Collectors.toList());
+            LambdaQueryWrapper<PhoneBasic> bq = new LambdaQueryWrapper<PhoneBasic>().in(PhoneBasic::getPhoneId, ids);
+            for (PhoneBasic b : basicMapper.selectList(bq)) {
+                procMap.put(b.getPhoneId(), b.getProcessor());
+            }
+        }
+        final Map<Long, String> procMapFinal = procMap;
+        List<PhoneListVO> list = phones.stream().map(p -> {
+            PhoneListVO vo = toListVO(p);
+            vo.setProcessor(procMapFinal.get(p.getId()));
+            return vo;
+        }).collect(Collectors.toList());
+
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("list", list);
+        result.put("total", total);
+        result.put("page", page);
+        result.put("pageSize", pageSize);
+        return result;
     }
 
     /** 机型详情 */
@@ -73,6 +157,7 @@ public class PhoneService {
         vo.setName(phone.getName());
         vo.setPrice(phone.getPrice());
         vo.setImageColor(phone.getImageColor());
+        vo.setCoverImage(phone.getCoverImage());
 
         // 基础数据
         PhoneBasic basic = basicMapper.selectOne(new LambdaQueryWrapper<PhoneBasic>().eq(PhoneBasic::getPhoneId, id));
@@ -156,6 +241,8 @@ public class PhoneService {
         vo.setBgColor(p.getBgColor());
         vo.setImageColor(p.getImageColor());
         vo.setScore(p.getScore());
+        vo.setPrice(p.getPrice());
+        vo.setCoverImage(p.getCoverImage());
         vo.setTags(parseTags(p.getScoreLabel()));
         return vo;
     }
@@ -171,7 +258,9 @@ public class PhoneService {
         vo.setScoreLabel(p.getScoreLabel());
         vo.setPrice(p.getPrice());
         vo.setSort(p.getSort());
+        vo.setCoverImage(p.getCoverImage());
         vo.setTags(parseTags(p.getScoreLabel()));
+        vo.setShowHome(p.getShowHome() != null && p.getShowHome());
         return vo;
     }
     // 解析 scoreLabel (如 "iOS,A系列,旗舰") 为标签列表
