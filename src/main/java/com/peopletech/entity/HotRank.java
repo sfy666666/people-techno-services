@@ -19,6 +19,7 @@ public class HotRank {
     private Integer heat;
     private String icon;
     private String period;
+    private Long phoneId;
     private Boolean enabled;
     private Integer sort;
 
@@ -40,6 +41,8 @@ public class HotRank {
     public void setIcon(String icon) { this.icon = icon; }
     public String getPeriod() { return period; }
     public void setPeriod(String period) { this.period = period; }
+    public Long getPhoneId() { return phoneId; }
+    public void setPhoneId(Long phoneId) { this.phoneId = phoneId; }
     public Boolean getEnabled() { return enabled; }
     public void setEnabled(Boolean enabled) { this.enabled = enabled; }
     public Integer getSort() { return sort; }

@@ -32,6 +32,7 @@ public class HotRankService {
     private HotRankVO toVO(HotRank h) {
         HotRankVO v = new HotRankVO();
         v.setId(h.getId());
+        v.setPhoneId(h.getPhoneId());
         v.setPhoneName(h.getPhoneName());
         v.setBrand(h.getBrand());
         v.setRankNo(h.getRankNo());

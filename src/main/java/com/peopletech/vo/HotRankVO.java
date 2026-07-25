@@ -2,6 +2,7 @@ package com.peopletech.vo;
 
 public class HotRankVO {
     private Long id;
+    private Long phoneId;
     private String phoneName;
     private String brand;
     private Integer rankNo;
@@ -11,6 +12,8 @@ public class HotRankVO {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    public Long getPhoneId() { return phoneId; }
+    public void setPhoneId(Long phoneId) { this.phoneId = phoneId; }
     public String getPhoneName() { return phoneName; }
     public void setPhoneName(String phoneName) { this.phoneName = phoneName; }
     public String getBrand() { return brand; }
