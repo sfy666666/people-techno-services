@@ -12,6 +12,7 @@ public class PhoneCardVO {
     private String coverImage;
     private String score;
     private Integer price;
+    private String launchDate;
 
     public Long getId() { return id; } public void setId(Long id) { this.id = id; }
     public String getName() { return name; } public void setName(String name) { this.name = name; }
@@ -22,4 +23,5 @@ public class PhoneCardVO {
     public String getCoverImage() { return coverImage; } public void setCoverImage(String coverImage) { this.coverImage = coverImage; }
     public String getScore() { return score; } public void setScore(String score) { this.score = score; }
     public Integer getPrice() { return price; } public void setPrice(Integer price) { this.price = price; }
+    public String getLaunchDate() { return launchDate; } public void setLaunchDate(String launchDate) { this.launchDate = launchDate; }
 }

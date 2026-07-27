@@ -17,8 +17,10 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 放行登录接口
-        if (request.getRequestURI().contains("/api/auth/login")) {
+        // 放行公开接口
+        if (request.getRequestURI().contains("/api/auth/login")
+                || request.getRequestURI().contains("/api/app-user/register")
+                || request.getRequestURI().contains("/api/app-user/login")) {
             return true;
         }
         // 放行公开接口
@@ -26,7 +28,11 @@ public class AuthInterceptor implements HandlerInterceptor {
                 || request.getRequestURI().contains("/api/phone/list")
                 || request.getRequestURI().contains("/api/phone/detail")
                 || request.getRequestURI().contains("/api/news")
-                || request.getRequestURI().contains("/api/hot-rank")) {
+                || request.getRequestURI().contains("/api/hot-rank")
+                || request.getRequestURI().contains("/api/phone/battery-rank")
+                || request.getRequestURI().contains("/api/phone/charge-rank")
+                || request.getRequestURI().contains("/api/phone/screen-rank")
+                || request.getRequestURI().contains("/api/phone/benchmark-rank")) {
             return true;
         }
 

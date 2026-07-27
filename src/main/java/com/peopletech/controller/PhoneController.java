@@ -55,6 +55,27 @@ public class PhoneController {
         return Result.ok(phoneService.getPhoneListPage(brand, category, keyword, sortBy, minPrice, maxPrice, page, pageSize));
     }
 
+    @GetMapping("/battery-rank")
+    public Result<List<BatteryRankVO>> getBatteryRank() {
+        return Result.ok(phoneService.getBatteryRank());
+    }
+
+    @GetMapping("/charge-rank")
+    public Result<List<ChargeRankVO>> getChargeRank() {
+        return Result.ok(phoneService.getChargeRank());
+    }
+
+    @GetMapping("/screen-rank")
+    public Result<List<ScreenRankVO>> getScreenRank() {
+        return Result.ok(phoneService.getScreenRank());
+    }
+
+    @GetMapping("/benchmark-rank")
+    public Result<List<BenchmarkRankVO>> getBenchmarkRank(
+            @RequestParam(value = "sortType", defaultValue = "multi_core") String sortType) {
+        return Result.ok(phoneService.getBenchmarkRank(sortType));
+    }
+
     @GetMapping("/detail/{id}")
     public Result<PhoneDetailVO> getPhoneDetail(@PathVariable Long id) {
         PhoneDetailVO vo = phoneService.getPhoneDetail(id);
