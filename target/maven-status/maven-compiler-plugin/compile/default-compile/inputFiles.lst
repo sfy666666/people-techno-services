@@ -17,8 +17,10 @@ G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\Admin
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\HotRankController.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\GameTestVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\BenchmarkRankVO.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\UserFavoriteMapper.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\PhoneBenchmarkMapper.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\config\MyBatisPlusConfig.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\UserFavorite.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\PeopleTechnoApplication.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\ChargeRankVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\PhoneCardVO.java
@@ -52,6 +54,7 @@ G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\Admi
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\PhoneService.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\BannerController.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\BannerVO.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\UserFavoriteService.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\PhoneBasic.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\NewsService.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\PhoneController.java

@@ -4,6 +4,7 @@ import com.peopletech.common.Result;
 import com.peopletech.entity.AppUser;
 import com.peopletech.service.AppUserService;
 import com.peopletech.service.UserHistoryService;
+import com.peopletech.service.UserFavoriteService;
 import com.peopletech.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,9 @@ public class AppUserController {
 
     @Autowired
     private UserHistoryService userHistoryService;
+
+    @Autowired
+    private UserFavoriteService userFavoriteService;
 
     /** 注册 */
     @PostMapping("/register")
@@ -164,6 +168,102 @@ public class AppUserController {
             Long userId = Long.parseLong(claims.getSubject());
             userHistoryService.removeHistory(userId, phoneId);
             return Result.ok(null);
+        } catch (Exception e) {
+            return Result.fail(401, "token无效或已过期");
+        }
+    }
+
+    // ========== 收藏相关 ==========
+
+    /** 添加收藏 */
+    @PostMapping("/favorite/add")
+    public Result<Void> addFavorite(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @RequestBody Map<String, Long> params) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.fail(401, "未登录");
+        }
+        try {
+            io.jsonwebtoken.Claims claims = jwtUtil.parseToken(authHeader.substring(7));
+            Long userId = Long.parseLong(claims.getSubject());
+            Long phoneId = params.get("phoneId");
+            if (phoneId == null) return Result.fail(400, "phoneId不能为空");
+            userFavoriteService.addFavorite(userId, phoneId);
+            return Result.ok(null);
+        } catch (Exception e) {
+            return Result.fail(401, "token无效或已过期");
+        }
+    }
+
+    /** 取消收藏 */
+    @DeleteMapping("/favorite/{phoneId}")
+    public Result<Void> removeFavorite(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @PathVariable Long phoneId) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.fail(401, "未登录");
+        }
+        try {
+            io.jsonwebtoken.Claims claims = jwtUtil.parseToken(authHeader.substring(7));
+            Long userId = Long.parseLong(claims.getSubject());
+            userFavoriteService.removeFavorite(userId, phoneId);
+            return Result.ok(null);
+        } catch (Exception e) {
+            return Result.fail(401, "token无效或已过期");
+        }
+    }
+
+    /** 是否已收藏 */
+    @GetMapping("/favorite/check/{phoneId}")
+    public Result<Map<String, Object>> checkFavorite(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @PathVariable Long phoneId) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.fail(401, "未登录");
+        }
+        try {
+            io.jsonwebtoken.Claims claims = jwtUtil.parseToken(authHeader.substring(7));
+            Long userId = Long.parseLong(claims.getSubject());
+            boolean isFav = userFavoriteService.isFavorite(userId, phoneId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("isFavorite", isFav);
+            return Result.ok(map);
+        } catch (Exception e) {
+            return Result.fail(401, "token无效或已过期");
+        }
+    }
+
+    /** 获取收藏列表 */
+    @GetMapping("/favorite/list")
+    public Result<List<Map<String, Object>>> listFavorites(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.fail(401, "未登录");
+        }
+        try {
+            io.jsonwebtoken.Claims claims = jwtUtil.parseToken(authHeader.substring(7));
+            Long userId = Long.parseLong(claims.getSubject());
+            List<Map<String, Object>> list = userFavoriteService.getFavorites(userId);
+            return Result.ok(list);
+        } catch (Exception e) {
+            return Result.fail(401, "token无效或已过期");
+        }
+    }
+
+    /** 获取收藏数量 */
+    @GetMapping("/favorite/count")
+    public Result<Map<String, Object>> favoriteCount(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return Result.fail(401, "未登录");
+        }
+        try {
+            io.jsonwebtoken.Claims claims = jwtUtil.parseToken(authHeader.substring(7));
+            Long userId = Long.parseLong(claims.getSubject());
+            long count = userFavoriteService.getFavoriteCount(userId);
+            Map<String, Object> map = new HashMap<>();
+            map.put("count", count);
+            return Result.ok(map);
         } catch (Exception e) {
             return Result.fail(401, "token无效或已过期");
         }
