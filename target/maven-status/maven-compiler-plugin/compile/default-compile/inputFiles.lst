@@ -1,7 +1,9 @@
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\PhoneBatteryMapper.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\UserHistoryMapper.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\config\WebConfig.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\PhoneBattery.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\NewsMapper.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\UserHistoryService.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\PhoneGameTest.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\PhoneOtherMapper.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\AppUserMapper.java
@@ -57,6 +59,7 @@ G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\HotRankVO
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\HomeController.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\BenchmarkVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\AppUser.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\UserHistory.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\PhoneDetailVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\PhoneAdminVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\PhoneScreen.java

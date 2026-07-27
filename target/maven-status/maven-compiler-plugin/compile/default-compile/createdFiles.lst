@@ -10,6 +10,7 @@ com\peopletech\vo\PerformanceRankVO.class
 com\peopletech\vo\PhoneAdminVO.class
 com\peopletech\config\WebConfig.class
 com\peopletech\entity\Banner.class
+com\peopletech\mapper\UserHistoryMapper.class
 com\peopletech\vo\GridMenuVO.class
 com\peopletech\controller\HotRankController.class
 com\peopletech\service\NewsService.class
@@ -41,8 +42,10 @@ com\peopletech\controller\NewsController.class
 com\peopletech\mapper\HotRankMapper.class
 com\peopletech\controller\AuthController.class
 com\peopletech\mapper\PhoneBasicMapper.class
+com\peopletech\entity\UserHistory.class
 com\peopletech\entity\News.class
 com\peopletech\service\PhoneService.class
+com\peopletech\service\UserHistoryService.class
 com\peopletech\config\GlobalExceptionHandler.class
 com\peopletech\util\JwtUtil.class
 com\peopletech\vo\ScreenRankVO.class
