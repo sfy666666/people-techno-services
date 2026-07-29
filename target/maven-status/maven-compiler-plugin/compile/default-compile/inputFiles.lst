@@ -51,6 +51,7 @@ G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\dto\HomeDTO.
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\util\JwtUtil.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\BatteryRankVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\AdminUserService.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\CompareVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\PhoneService.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\BannerController.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\BannerVO.java

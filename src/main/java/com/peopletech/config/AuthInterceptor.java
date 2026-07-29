@@ -27,6 +27,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (request.getRequestURI().contains("/api/home")
                 || request.getRequestURI().contains("/api/phone/list")
                 || request.getRequestURI().contains("/api/phone/detail")
+                || request.getRequestURI().contains("/api/phone/compare")
                 || request.getRequestURI().contains("/api/news")
                 || request.getRequestURI().contains("/api/hot-rank")
                 || request.getRequestURI().contains("/api/phone/battery-rank")

@@ -326,11 +326,24 @@ public class PhoneService {
      * - 日常使用：优先真实"日常续航/日常综合"场景；无则用 在线视频、网页浏览 的均值作代理
      */
     public List<BatteryRankVO> getBatteryRank() {
-        List<Phone> phones = phoneMapper.selectList(
-            new LambdaQueryWrapper<Phone>().eq(Phone::getEnabled, true));
-        if (phones.isEmpty()) return Collections.emptyList();
+        // 无分页版本兼容
+        Map<String, Object> data = getBatteryRank(1, Integer.MAX_VALUE);
+        return (List<BatteryRankVO>) data.get("list");
+    }
 
-        List<Long> ids = phones.stream().map(Phone::getId).collect(Collectors.toList());
+    /** 分页版续航排行 */
+    public Map<String, Object> getBatteryRank(int page, int pageSize) {
+        // 先查出全部满足条件的机型（带综合续航计算），再截取分页
+        List<Phone> allPhones = phoneMapper.selectList(
+            new LambdaQueryWrapper<Phone>().eq(Phone::getEnabled, true));
+        if (allPhones.isEmpty()) {
+            Map<String, Object> empty = new HashMap<>();
+            empty.put("list", Collections.emptyList());
+            empty.put("total", 0);
+            return empty;
+        }
+
+        List<Long> allIds = allPhones.stream().map(Phone::getId).collect(Collectors.toList());
 
         Set<String> SCENES = new HashSet<String>(Arrays.asList(
             "游戏续航", "重度游戏续航",
@@ -339,22 +352,21 @@ public class PhoneService {
             "网页浏览", "浏览网页"));
         List<PhoneBattery> batteries = batteryMapper.selectList(
             new LambdaQueryWrapper<PhoneBattery>()
-                .in(PhoneBattery::getPhoneId, ids)
+                .in(PhoneBattery::getPhoneId, allIds)
                 .in(PhoneBattery::getScene, SCENES));
         Map<Long, List<PhoneBattery>> batMap = new HashMap<Long, List<PhoneBattery>>();
         for (PhoneBattery b : batteries) {
-            List<PhoneBattery> l = batMap.get(b.getPhoneId());
-            if (l == null) { l = new ArrayList<PhoneBattery>(); batMap.put(b.getPhoneId(), l); }
+            List<PhoneBattery> l = batMap.computeIfAbsent(b.getPhoneId(), k -> new ArrayList<>());
             l.add(b);
         }
 
         List<PhoneBasic> basics = basicMapper.selectList(
-            new LambdaQueryWrapper<PhoneBasic>().in(PhoneBasic::getPhoneId, ids));
+            new LambdaQueryWrapper<PhoneBasic>().in(PhoneBasic::getPhoneId, allIds));
         Map<Long, PhoneBasic> basicMap = new HashMap<Long, PhoneBasic>();
         for (PhoneBasic b : basics) basicMap.put(b.getPhoneId(), b);
 
-        List<BatteryRankVO> result = new ArrayList<BatteryRankVO>();
-        for (Phone p : phones) {
+        List<BatteryRankVO> full = new ArrayList<BatteryRankVO>();
+        for (Phone p : allPhones) {
             List<PhoneBattery> list = batMap.get(p.getId());
             if (list == null || list.isEmpty()) continue;
             Double composite = computeComposite(list);
@@ -374,7 +386,7 @@ public class PhoneService {
             vo.setCoverImage(p.getCoverImage());
             vo.setBgColor(p.getBgColor());
             vo.setImageColor(p.getImageColor());
-            vo.setDuration(composite);
+            vo.setDuration(Math.round(composite * 100.0) / 100.0);
             PhoneBasic basic = basicMap.get(p.getId());
             if (basic != null) {
                 vo.setBatteryCapacity(basic.getBatteryCapacity());
@@ -392,11 +404,23 @@ public class PhoneService {
                 }
                 vo.setSpec(spec.toString());
             }
-            result.add(vo);
+            full.add(vo);
         }
         // 按综合续航降序
-        result.sort((a, b) -> Double.compare(b.getDuration(), a.getDuration()));
-        return result;
+        full.sort((a, b) -> Double.compare(b.getDuration(), a.getDuration()));
+
+        // 分页
+        int total = full.size();
+        int offset = (page - 1) * pageSize;
+        int end = Math.min(offset + pageSize, total);
+        List<BatteryRankVO> paged = (offset < total) ? full.subList(offset, end) : Collections.emptyList();
+
+        Map<String, Object> res = new HashMap<>();
+        res.put("list", paged);
+        res.put("total", total);
+        res.put("page", page);
+        res.put("pageSize", pageSize);
+        return res;
     }
 
     /** 综合续航 = (游戏续航 + 日常使用均值) / 2 */
@@ -707,5 +731,93 @@ public class PhoneService {
     /** 无参默认返回多核榜 */
     public List<BenchmarkRankVO> getBenchmarkRank() {
         return getBenchmarkRank("multi_core");
+    }
+
+    /** 对比接口：批量查询多款机型详情（简化版） */
+    public List<CompareVO> getCompare(List<Long> ids) {
+        return ids.stream().map(this::toCompareVO).filter(Objects::nonNull).collect(Collectors.toList());
+    }
+
+    private CompareVO toCompareVO(Long id) {
+        Phone phone = phoneMapper.selectById(id);
+        if (phone == null) return null;
+
+        CompareVO vo = new CompareVO();
+        vo.setId(phone.getId());
+        vo.setBrand(phone.getBrand());
+        vo.setName(phone.getName());
+        vo.setPrice(phone.getPrice());
+        vo.setCoverImage(phone.getCoverImage());
+        vo.setBgColor(phone.getBgColor());
+
+        PhoneBasic basic = basicMapper.selectOne(new LambdaQueryWrapper<PhoneBasic>().eq(PhoneBasic::getPhoneId, id));
+        if (basic != null) {
+            List<KeyValueVO> basicItems = new ArrayList<>();
+            if (basic.getTestModel() != null)    basicItems.add(new KeyValueVO("测试机型", basic.getTestModel()));
+            if (basic.getLaunchDate() != null)   basicItems.add(new KeyValueVO("上市时间", basic.getLaunchDate()));
+            if (basic.getProcessor() != null)    basicItems.add(new KeyValueVO("处理器", basic.getProcessor()));
+            if (basic.getMemoryConfig() != null) basicItems.add(new KeyValueVO("内存组合", basic.getMemoryConfig()));
+            if (basic.getBatteryCapacity() != null) basicItems.add(new KeyValueVO("电池容量", basic.getBatteryCapacity() + "mAh"));
+            if (basic.getScreenSize() != null)   basicItems.add(new KeyValueVO("屏幕尺寸", basic.getScreenSize()));
+            if (basic.getPrice() != null)        basicItems.add(new KeyValueVO("起始价格", "￥" + basic.getPrice(), true));
+            vo.setBasicItems(basicItems);
+
+            // 屏幕参数从 PhoneScreen 表取
+            List<PhoneScreen> screens = screenMapper.selectList(
+                new LambdaQueryWrapper<PhoneScreen>().eq(PhoneScreen::getPhoneId, id));
+            if (screens != null && !screens.isEmpty()) {
+                List<KeyValueVO> screenItems = screens.stream()
+                    .map(s -> new KeyValueVO(s.getName(), s.getVal()))
+                    .collect(Collectors.toList());
+                vo.setScreenItems(screenItems);
+            }
+        }
+
+        // 游戏测试
+        List<PhoneGameTest> games = gameTestMapper.selectList(
+            new LambdaQueryWrapper<PhoneGameTest>().eq(PhoneGameTest::getPhoneId, id));
+        vo.setGameTests(games.stream().map(g -> {
+            GameTestVO gv = new GameTestVO();
+            gv.setGameName(g.getGameName());
+            gv.setAvgFps(g.getAvgFps());
+            gv.setSettings(g.getSettings());
+            gv.setPower(g.getPower());
+            gv.setRemark(g.getRemark());
+            return gv;
+        }).collect(Collectors.toList()));
+
+        // 跑分
+        List<PhoneBenchmark> benches = benchmarkMapper.selectList(
+            new LambdaQueryWrapper<PhoneBenchmark>().eq(PhoneBenchmark::getPhoneId, id));
+        vo.setBenchmarks(benches.stream().map(b -> {
+            BenchmarkVO bv = new BenchmarkVO();
+            bv.setName(b.getName());
+            bv.setVersion(b.getVersion());
+            bv.setScore(b.getScore());
+            bv.setPercentile(b.getPercentile());
+            return bv;
+        }).collect(Collectors.toList()));
+
+        // CPU 总结
+        CpuSummaryVO cpuSummary = new CpuSummaryVO();
+        cpuSummary.setOverallScore("92");
+        cpuSummary.setRanking("旗舰级");
+        cpuSummary.setPerformanceNote("性能释放激进");
+        cpuSummary.setEfficiencyNote("能效比优秀");
+        cpuSummary.setThermalsNote("发热控制良好");
+        vo.setCpuSummary(cpuSummary);
+
+        // 续航
+        List<PhoneBattery> batteries = batteryMapper.selectList(
+            new LambdaQueryWrapper<PhoneBattery>().eq(PhoneBattery::getPhoneId, id));
+        vo.setBatteryTests(batteries.stream().map(b -> {
+            BatteryTestVO bv = new BatteryTestVO();
+            bv.setScene(b.getScene());
+            bv.setDuration(b.getDuration());
+            bv.setDischargeRate(b.getDischargeRate());
+            return bv;
+        }).collect(Collectors.toList()));
+
+        return vo;
     }
 }

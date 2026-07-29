@@ -1,4 +1,5 @@
 com\peopletech\entity\PhoneGameTest.class
+com\peopletech\vo\CompareVO.class
 com\peopletech\controller\HomeController.class
 com\peopletech\mapper\PhoneOtherMapper.class
 com\peopletech\mapper\PhoneScreenMapper.class

@@ -43,6 +43,15 @@ public class NewsService {
         return n == null ? null : toVO(n);
     }
 
+    public News updateNews(News news) {
+        newsMapper.updateById(news);
+        return newsMapper.selectById(news.getId());
+    }
+
+    public void deleteNews(Long id) {
+        newsMapper.deleteById(id);
+    }
+
     private NewsVO toVO(News n) {
         NewsVO vo = new NewsVO();
         vo.setId(n.getId());

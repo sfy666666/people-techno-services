@@ -39,8 +39,15 @@ public class NewsController {
         return Result.ok(newsService.createNews(news));
     }
 
+    @PutMapping("/admin/{id}")
+    public Result<News> updateNews(@PathVariable Long id, @RequestBody News news) {
+        news.setId(id);
+        return Result.ok(newsService.updateNews(news));
+    }
+
     @DeleteMapping("/admin/{id}")
     public Result<Void> deleteNews(@PathVariable Long id) {
-        return Result.ok();
+        newsService.deleteNews(id);
+        return Result.ok(null);
     }
 }

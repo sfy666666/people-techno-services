@@ -9,8 +9,8 @@ import com.peopletech.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/phone")
@@ -56,8 +56,10 @@ public class PhoneController {
     }
 
     @GetMapping("/battery-rank")
-    public Result<List<BatteryRankVO>> getBatteryRank() {
-        return Result.ok(phoneService.getBatteryRank());
+    public Result<Map<String, Object>> getBatteryRank(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int pageSize) {
+        return Result.ok(phoneService.getBatteryRank(page, pageSize));
     }
 
     @GetMapping("/charge-rank")
@@ -200,5 +202,19 @@ public class PhoneController {
         others.forEach(o -> { o.setPhoneId(phoneId); o.setId(null); });
         others.forEach(otherMapper::insert);
         return Result.ok();
+    }
+
+    /** 对比接口：ids=1,2,3 */
+    @GetMapping("/compare")
+    public Result<List<CompareVO>> getCompare(@RequestParam String ids) {
+        if (ids == null || ids.trim().isEmpty()) return Result.ok(Collections.emptyList());
+        List<Long> idList = Arrays.stream(ids.split(","))
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .map(Long::parseLong)
+            .distinct()
+            .limit(3)
+            .collect(Collectors.toList());
+        return Result.ok(phoneService.getCompare(idList));
     }
 }
