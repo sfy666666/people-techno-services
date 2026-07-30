@@ -106,6 +106,18 @@ public class PhoneService {
         }).collect(Collectors.toList());
     }
 
+    /** 轻量级选择列表：仅返回 id、brand、name */
+    public List<PhoneSelectVO> getSelectList() {
+        LambdaQueryWrapper<Phone> q = new LambdaQueryWrapper<Phone>()
+            .eq(Phone::getEnabled, true)
+            .orderByAsc(Phone::getSort)
+            .orderByDesc(Phone::getId);
+        List<Phone> phones = phoneMapper.selectList(q);
+        return phones.stream()
+            .map(p -> new PhoneSelectVO(p.getId(), p.getName(), p.getBrand()))
+            .collect(Collectors.toList());
+    }
+
     /** 机型列表（分页） */
     public Map<String, Object> getPhoneListPage(String brand, String category, String keyword,
                                                  String sortBy, Integer minPrice, Integer maxPrice,

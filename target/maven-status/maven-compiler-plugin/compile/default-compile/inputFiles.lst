@@ -43,6 +43,7 @@ G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\Admin
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\entity\Banner.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\mapper\PhoneScreenMapper.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\AuthController.java
+G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\PhoneSelectVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\controller\NewsController.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\vo\BatteryTestVO.java
 G:\JavaWorkSpace\people-techno-service\src\main\java\com\peopletech\service\HotRankService.java

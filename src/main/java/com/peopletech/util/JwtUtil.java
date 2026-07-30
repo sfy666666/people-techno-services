@@ -17,8 +17,8 @@ public class JwtUtil {
     @Value("${jwt.secret:people-techno-admin-secret-key-2024}")
     private String secret;
 
-    @Value("${jwt.expire:86400000}")
-    private long expire; // 24小时
+    @Value("${jwt.expire:604800000}")
+    private long expire; // 7天
 
     private SecretKey getKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);

@@ -55,6 +55,12 @@ public class PhoneController {
         return Result.ok(phoneService.getPhoneListPage(brand, category, keyword, sortBy, minPrice, maxPrice, page, pageSize));
     }
 
+    /** 轻量级选择列表：仅返回 id、brand、name，用于弹窗选择 */
+    @GetMapping("/select-list")
+    public Result<List<PhoneSelectVO>> getSelectList() {
+        return Result.ok(phoneService.getSelectList());
+    }
+
     @GetMapping("/battery-rank")
     public Result<Map<String, Object>> getBatteryRank(
             @RequestParam(defaultValue = "1") int page,

@@ -64,6 +64,7 @@ com\peopletech\service\HotRankService.class
 com\peopletech\vo\BannerVO.class
 com\peopletech\service\AppUserService.class
 com\peopletech\vo\ChargeRankVO.class
+com\peopletech\vo\PhoneSelectVO.class
 com\peopletech\entity\Phone.class
 com\peopletech\dto\HomeDTO.class
 com\peopletech\controller\AppUserController.class
